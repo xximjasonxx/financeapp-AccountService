@@ -1,9 +1,10 @@
 
+using System;
 using Newtonsoft.Json;
 
 namespace AccountService.Models
 {
-    public class NewUserInfo
+    public class UserInfo
     {
         [JsonProperty("username")]
         public string Username { get; set; }

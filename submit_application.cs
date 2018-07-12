@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using AccountService.Models;
 using System.Threading.Tasks;
+using AccountService.Services;
 
 namespace AccountService.Functions
 {
@@ -19,14 +20,14 @@ namespace AccountService.Functions
         {
             log.Info("C# HTTP trigger function processed a request.");
             string rawContents = await req.ReadAsStringAsync();
-            NewUserInfo newUser = JsonConvert.DeserializeObject<NewUserInfo>(rawContents);
+            UserInfo newUser = JsonConvert.DeserializeObject<UserInfo>(rawContents);
             AccountApplication applicationData = JsonConvert.DeserializeObject<AccountApplication>(rawContents);
 
-            log.Info($"Username: {newUser.Username}");
-            log.Info($"Account Name: {applicationData.AccountName}");
-
             string applicationId = Guid.NewGuid().ToString();
-            // applicationData.ApplicationId = applicationId;   
+            applicationData.ApplicationId = applicationId; 
+            newUser.PendingApplication = applicationId;
+
+            var updatedUser = await UserService.CreateUser(newUser);
 
             return new OkResult();
         }

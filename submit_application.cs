@@ -27,15 +27,8 @@ namespace AccountService.Functions
             applicationData.ApplicationId = applicationId; 
             newUser.PendingApplication = applicationId;
 
-            try
-            {
-                var updatedUser = await UserService.CreateUser(newUser);
-                log.Info("User Created");
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error", ex);
-            }
+            var updatedUser = await UserService.CreateUser(newUser);
+            log.Info($"New Id: {updatedUser.Id}");
 
             return new OkResult();
         }

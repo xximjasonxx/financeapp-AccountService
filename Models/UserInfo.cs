@@ -1,11 +1,30 @@
 
 using System;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace AccountService.Models
 {
     public class UserInfo
     {
+        [BsonId, JsonIgnore]
+        public ObjectId _Id { get; set; }
+
+        [JsonProperty("id"), BsonIgnore]
+        public string Id
+        {
+            get { return _Id.ToString(); }
+            set
+            {
+                ObjectId parsedValue;
+                if (ObjectId.TryParse(value, out parsedValue))
+                    _Id = parsedValue;
+                else
+                    _Id = ObjectId.Empty;
+            }
+        }
+
         [JsonProperty("emailAddress")]
         public string EmailAddress { get; set; }
 

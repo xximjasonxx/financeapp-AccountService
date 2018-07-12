@@ -14,7 +14,7 @@ namespace AccountService.Functions
     public static class AccountService
     {
         [FunctionName("submit_application")]
-        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]NewUserInfo newUser, AccountApplication applicationData, TraceWriter log)
+        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]NewUserInfo newUser, [HttpTrigger]AccountApplication applicationData, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
             log.Info($"Username: {newUser.Username}");

@@ -14,14 +14,14 @@ namespace AccountService.Functions
     public static class AccountService
     {
         [FunctionName("submit_application")]
-        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequest req, TraceWriter log)
+        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequest req, NewUserInfo newUser, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
-            // log.Info($"Username: {newUser.Username}");
+            log.Info($"Username: {newUser.Username}");
             // log.Info($"Account Name: {applicationData.AccountName}");
 
             string applicationId = Guid.NewGuid().ToString();
-            // applicationData.ApplicationId = applicationId;
+            // applicationData.ApplicationId = applicationId;   
 
             return new OkResult();
         }

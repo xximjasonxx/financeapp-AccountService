@@ -6,8 +6,8 @@ namespace AccountService.Models
 {
     public class UserInfo
     {
-        [JsonProperty("username")]
-        public string Username { get; set; }
+        [JsonProperty("email")]
+        public string EmailAddress { get; set; }
 
         [JsonProperty("password")]          // yup - storing in plaintext cause this is a sample app
         public string Password { get; set; }

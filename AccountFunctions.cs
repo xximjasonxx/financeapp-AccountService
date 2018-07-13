@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.ServiceBus;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -13,7 +14,7 @@ using AccountService.Services;
 
 namespace AccountService.Functions
 {
-    public static class AccountService
+    public static class AccountFunctions
     {
         [FunctionName("submit_application")]
         public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequest req, TraceWriter log)
@@ -33,6 +34,12 @@ namespace AccountService.Functions
             log.Info("Application submitted");
 
             return new OkResult();
+        }
+
+        [FunctionName("process_application")]
+        public static void ProcessQueueMessage([ServiceBusTrigger("accounts_to_process", Connection = "ServiceBusConnectionString")] string message, TextWriter logger)
+        {
+            logger.WriteLine(message);
         }
     }
 }

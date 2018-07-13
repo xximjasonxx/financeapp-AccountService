@@ -17,5 +17,8 @@ namespace AccountService.Models
 
         [JsonProperty("startingBalance")]
         public decimal StartingBalance { get; set; }
+
+        [JsonProperty("owningUserId")]
+        public string OwningUserId { get; internal set; }
     }
 }

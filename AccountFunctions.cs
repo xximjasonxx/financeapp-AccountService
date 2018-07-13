@@ -36,8 +36,9 @@ namespace AccountService.Functions
             return new OkResult();
         }
 
+        [ServiceBusAccount("ServiceBusConnectionString")]
         [FunctionName("process_application")]
-        public static void ProcessQueueMessage([ServiceBusTrigger("accounts_to_process", Connection = "ServiceBusConnectionString")] string message, TraceWriter logger)
+        public static void ProcessQueueMessage([ServiceBusTrigger("accounts_to_process")] string message, TraceWriter logger)
         {
             logger.Info("proces trigger firing");
         }

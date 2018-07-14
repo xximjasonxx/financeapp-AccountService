@@ -24,13 +24,13 @@ namespace AccountService.Functions
             AccountApplication applicationData = JsonConvert.DeserializeObject<AccountApplication>(rawContents);
 
             string applicationId = Guid.NewGuid().ToString();
-            applicationData.ApplicationId = applicationId; 
+            applicationData.ApplicationId = applicationId;
             newUser.PendingApplication = applicationId;
 
             var updatedUser = await UserService.CreateUser(newUser);
             log.Info("User Created");
             applicationData.OwningUserId = updatedUser.Id;
-            await AccountsService.SubmitApplication(applicationData);
+            await AccountsService.CreateAccount(applicationData);
             log.Info("Application submitted");
 
             return new OkResult();
@@ -38,10 +38,19 @@ namespace AccountService.Functions
 
         [ServiceBusAccount("ServiceBusConnectionString")]
         [FunctionName("process_application")]
-        public static void ProcessQueueMessage([ServiceBusTrigger("accounts_to_process")] string message, TraceWriter logger)
+        public static async Task ProcessQueueMessage([ServiceBusTrigger("accounts_to_process")] string applicationContents, TraceWriter logger)
         {
-            logger.Info("proces trigger firing");
-            logger.Info($"your message {message}");
+            var application = JsonConvert.DeserializeObject<AccountApplication>(applicationContents);
+
+            // find the account matching the criteria from the application
+            var account = await AccountsService.GetAccountByApplication(application);
+            if (account != null)
+            {
+                account.Status = AccountStatus.Open;
+                account.CurrentBalance = application.StartingBalance;
+            }
+
+            await AccountsService.UpdateAccountDetails(account);
         }
     }
 }

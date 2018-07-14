@@ -28,13 +28,13 @@ namespace AccountService.Services
             await QueueService.SubmitApplicationForProcessing(application);
         }
 
-        public static async Task<Account> GetAccountByApplication(AccountApplication application)
+        public static Account GetAccountByApplication(AccountApplication application)
         {
             var client = new MongoClient("mongodb://financeapp:1e5Q5BuE7wRjGYmPSDj3IHK7gbQifFCvMwx7YoviCrUg88YK1YX3go74vYyeYwlzbrsCOxSfzB8iCVopJ7xHSw==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
             var database = client.GetDatabase("accounts");
             var collection = database.GetCollection<Account>("accounts");
 
-            var result = await collection.FindAsync(x => x.ApplicationId == application.ApplicationId &&
+            var result = collection.Find(x => x.ApplicationId == application.ApplicationId &&
                 x.AccountName == application.AccountName &&
                 x.AccountType == application.AccountType &&
                 x.OwnerId == application.OwningUserId &&
@@ -43,14 +43,14 @@ namespace AccountService.Services
             return result.FirstOrDefault();
         }
 
-        public static async Task UpdateAccountDetails(Account account)
+        public static void UpdateAccountDetails(Account account)
         {
             var client = new MongoClient("mongodb://financeapp:1e5Q5BuE7wRjGYmPSDj3IHK7gbQifFCvMwx7YoviCrUg88YK1YX3go74vYyeYwlzbrsCOxSfzB8iCVopJ7xHSw==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
             var database = client.GetDatabase("accounts");
             var collection = database.GetCollection<Account>("accounts");
 
 
-            await collection.ReplaceOneAsync(x => x.Id == account.Id, account);
+            collection.ReplaceOne(x => x.Id == account.Id, account);
         }
     }
 }

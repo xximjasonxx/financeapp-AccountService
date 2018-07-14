@@ -38,19 +38,34 @@ namespace AccountService.Functions
 
         [ServiceBusAccount("ServiceBusConnectionString")]
         [FunctionName("process_application")]
-        public static async Task ProcessQueueMessage([ServiceBusTrigger("accounts_to_process")] string applicationContents, TraceWriter logger)
+        public static void ProcessQueueMessage([ServiceBusTrigger("accounts_to_process")] string applicationContents, TraceWriter logger)
         {
-            var application = JsonConvert.DeserializeObject<AccountApplication>(applicationContents);
-
-            // find the account matching the criteria from the application
-            var account = await AccountsService.GetAccountByApplication(application);
-            if (account != null)
+            try
             {
-                account.Status = AccountStatus.Open;
-                account.CurrentBalance = application.StartingBalance;
-            }
+                var application = JsonConvert.DeserializeObject<AccountApplication>(applicationContents);
 
-            await AccountsService.UpdateAccountDetails(account);
+                // find the account matching the criteria from the application
+                var account = AccountsService.GetAccountByApplication(application);
+                if (account != null)
+                {
+                    account.Status = AccountStatus.Open;
+                    account.CurrentBalance = application.StartingBalance;
+                }
+
+                AccountsService.UpdateAccountDetails(account);
+            }
+            catch (AggregateException aex)
+            {
+                foreach (var ex in aex.InnerExceptions)
+                {
+                    var localExeception = ex;
+                    do
+                    {
+                        logger.Error(localExeception.Message, ex);
+                        localExeception = localExeception.InnerException;
+                    } while (localExeception != null);
+                }
+            }
         }
     }
 }

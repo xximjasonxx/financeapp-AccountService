@@ -43,28 +43,24 @@ namespace AccountService.Functions
             try
             {
                 var application = JsonConvert.DeserializeObject<AccountApplication>(applicationContents);
+                logger.Info("deserialization complete");
 
                 // find the account matching the criteria from the application
                 var account = AccountsService.GetAccountByApplication(application);
                 if (account != null)
                 {
+                    logger.Info("found an account application");
+
                     account.Status = AccountStatus.Open;
                     account.CurrentBalance = application.StartingBalance;
                 }
 
                 AccountsService.UpdateAccountDetails(account);
+                logger.Info("update complete");
             }
-            catch (AggregateException aex)
+            catch (Exception aex)
             {
-                foreach (var ex in aex.InnerExceptions)
-                {
-                    var localExeception = ex;
-                    do
-                    {
-                        logger.Error(localExeception.Message, ex);
-                        localExeception = localExeception.InnerException;
-                    } while (localExeception != null);
-                }
+                logger.Error(aex.Message, aex);
             }
         }
     }

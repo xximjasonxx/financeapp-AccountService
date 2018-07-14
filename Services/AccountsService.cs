@@ -50,7 +50,7 @@ namespace AccountService.Services
             var collection = database.GetCollection<Account>("accounts");
 
 
-            collection.ReplaceOne(x => x.Id == account.Id, account);
+            collection.ReplaceOne(x => x._Id == account._Id, account);
         }
     }
 }

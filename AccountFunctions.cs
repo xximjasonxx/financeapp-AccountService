@@ -65,7 +65,7 @@ namespace AccountService.Functions
         }
 
         [FunctionName("get_accounts")]
-        public static async Task<IActionResult> GetAccounts([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, TraceWriter log)
+        public static async Task<IActionResult> GetAccounts([HttpTrigger(AuthorizationLevel.User, "get", Route = null)]HttpRequest req, TraceWriter log)
         {
             return new OkObjectResult(await AccountsService.GetAccounts());
         }

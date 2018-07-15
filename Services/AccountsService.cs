@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AccountService.Models;
@@ -51,6 +52,17 @@ namespace AccountService.Services
 
 
             collection.ReplaceOne(x => x._Id == account._Id, account);
+        }
+
+        public static async Task<IList<Account>> GetAccounts()
+        {
+            var client = new MongoClient("mongodb://financeapp:1e5Q5BuE7wRjGYmPSDj3IHK7gbQifFCvMwx7YoviCrUg88YK1YX3go74vYyeYwlzbrsCOxSfzB8iCVopJ7xHSw==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
+            var database = client.GetDatabase("accounts");
+            var collection = database.GetCollection<Account>("accounts");
+
+            var results = await collection.FindAsync(FilterDefinition<Account>.Empty);
+            return results.ToList();
+
         }
     }
 }

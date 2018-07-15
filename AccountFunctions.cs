@@ -17,7 +17,7 @@ namespace AccountService.Functions
     public static class AccountFunctions
     {
         [FunctionName("submit_application")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequest req, TraceWriter log)
+        public static async Task<IActionResult> SubmitApplication([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequest req, TraceWriter log)
         {
             string rawContents = await req.ReadAsStringAsync();
             UserInfo newUser = JsonConvert.DeserializeObject<UserInfo>(rawContents);
@@ -38,7 +38,7 @@ namespace AccountService.Functions
 
         [ServiceBusAccount("ServiceBusConnectionString")]
         [FunctionName("process_application")]
-        public static void ProcessQueueMessage([ServiceBusTrigger("accounts_to_process")] string applicationContents, TraceWriter logger)
+        public static void ProcessApplication([ServiceBusTrigger("accounts_to_process")] string applicationContents, TraceWriter logger)
         {
             try
             {
@@ -62,6 +62,12 @@ namespace AccountService.Functions
             {
                 logger.Error(aex.Message, aex);
             }
+        }
+
+        [FunctionName("get_accounts")]
+        public static async Task<IActionResult> GetAccounts([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, TraceWriter log)
+        {
+            return new OkObjectResult(await AccountsService.GetAccounts());
         }
     }
 }

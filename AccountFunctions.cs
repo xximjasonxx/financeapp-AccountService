@@ -20,16 +20,14 @@ namespace AccountService.Functions
         public static async Task<IActionResult> SubmitApplication([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequest req, TraceWriter log)
         {
             string rawContents = await req.ReadAsStringAsync();
-            UserInfo newUser = JsonConvert.DeserializeObject<UserInfo>(rawContents);
+            User newUser = JsonConvert.DeserializeObject<User>(rawContents);
             AccountApplication applicationData = JsonConvert.DeserializeObject<AccountApplication>(rawContents);
 
+            var createdUser = await UserService.CreateUser(newUser);
             string applicationId = Guid.NewGuid().ToString();
             applicationData.ApplicationId = applicationId;
-            newUser.PendingApplication = applicationId;
-
-            var updatedUser = await UserService.CreateUser(newUser);
-            log.Info("User Created");
-            applicationData.OwningUserId = updatedUser.Id;
+            applicationData.OwningUserId = createdUser.UserId;
+            
             await AccountsService.CreateAccount(applicationData);
             log.Info("Application submitted");
 

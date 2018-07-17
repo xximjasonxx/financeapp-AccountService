@@ -2,30 +2,43 @@
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using AccountService.Models;
+using System.Net.Http;
+using AccountService.Responses;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace AccountService.Services
 {
     public static class UserService
     {
-        public static async Task<UserInfo> CreateUser(UserInfo newUser)
+        public static async Task<CreateUserResponse> CreateUser(User newUser)
         {
-            var client = new MongoClient("mongodb://financeapp:1e5Q5BuE7wRjGYmPSDj3IHK7gbQifFCvMwx7YoviCrUg88YK1YX3go74vYyeYwlzbrsCOxSfzB8iCVopJ7xHSw==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
-            var database = client.GetDatabase("users");
-            var collection = database.GetCollection<UserInfo>("users");
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsJsonAsync("https://financeapp-authservice.azurewebsites.net/api/create_user", newUser);
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    // something bad happend
+                }
 
-            await collection.InsertOneAsync(newUser);
-
-            return newUser;
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<CreateUserResponse>(responseContent);
+            }
         }
 
-        public static async Task<UserInfo> GetUser(string userId)
+        public static async Task<User> GetUser(string userId)
         {
-            var client = new MongoClient("mongodb://financeapp:1e5Q5BuE7wRjGYmPSDj3IHK7gbQifFCvMwx7YoviCrUg88YK1YX3go74vYyeYwlzbrsCOxSfzB8iCVopJ7xHSw==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
-            var database = client.GetDatabase("users");
-            var collection = database.GetCollection<UserInfo>("users");
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync($"https://financeapp-authservice.azurewebsites.net/api/{userId}");
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    return null;
+                }
 
-            var result = await collection.FindAsync(x => x.Id == userId);
-            return result.FirstOrDefault();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<User>(responseContent);
+            }
         }
     }
 }

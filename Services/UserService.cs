@@ -16,6 +16,7 @@ namespace AccountService.Services
             using (var client = new HttpClient())
             {
                 var content = new StringContent(JsonConvert.SerializeObject(newUser));
+                client.DefaultRequestHeaders.Add("x-functions-key", "yjUjHlfwXbRAZFVBNFuhMAUOOA8MhL/XyXLxlqn7mGr/0inFn3JCyA==");
                 var response = await client.PostAsync("https://financeapp-authservice.azurewebsites.net/api/create_user", content);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -32,6 +33,7 @@ namespace AccountService.Services
             using (var client = new HttpClient())
             {
                 var response = await client.GetAsync($"https://financeapp-authservice.azurewebsites.net/api/{userId}");
+                client.DefaultRequestHeaders.Add("x-functions-key", "yjUjHlfwXbRAZFVBNFuhMAUOOA8MhL/XyXLxlqn7mGr/0inFn3JCyA==");
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     return null;

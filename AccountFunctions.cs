@@ -17,7 +17,7 @@ namespace AccountService.Functions
     public static class AccountFunctions
     {
         [FunctionName("submit_application")]
-        public static async Task<IActionResult> SubmitApplication([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequest req, TraceWriter log)
+        public static async Task<IActionResult> SubmitApplication([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest req, TraceWriter log)
         {
             string rawContents = await req.ReadAsStringAsync();
             User newUser = JsonConvert.DeserializeObject<User>(rawContents);
@@ -65,7 +65,7 @@ namespace AccountService.Functions
         }
 
         [FunctionName("get_accounts")]
-        public static async Task<IActionResult> GetAccounts([HttpTrigger(AuthorizationLevel.User, "get", Route = null)]HttpRequest req, TraceWriter log)
+        public static async Task<IActionResult> GetAccounts([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, TraceWriter log)
         {
             return new OkObjectResult(await AccountsService.GetAccounts());
         }

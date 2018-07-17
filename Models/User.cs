@@ -11,6 +11,9 @@ namespace AccountService.Models
         [JsonProperty("emailAddress")]
         public string EmailAddress { get; set; }
 
+        [JsonProperty("password")]
+        public string Password { get; set; }
+
         [JsonProperty("firstName")]
         public string FirstName { get; set; }
 

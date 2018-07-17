@@ -21,6 +21,8 @@ namespace AccountService.Functions
         {
             string rawContents = await req.ReadAsStringAsync();
             User newUser = JsonConvert.DeserializeObject<User>(rawContents);
+            log.Info($"Email Address: {newUser.EmailAddress}");
+
             AccountApplication applicationData = JsonConvert.DeserializeObject<AccountApplication>(rawContents);
 
             var createdUser = await UserService.CreateUser(newUser);

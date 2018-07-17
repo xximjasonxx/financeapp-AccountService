@@ -15,7 +15,8 @@ namespace AccountService.Services
         {
             using (var client = new HttpClient())
             {
-                var response = await client.PostAsJsonAsync("https://financeapp-authservice.azurewebsites.net/api/create_user", newUser);
+                var content = new StringContent(JsonConvert.SerializeObject(newUser));
+                var response = await client.PostAsync("https://financeapp-authservice.azurewebsites.net/api/create_user", content);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     // something bad happend

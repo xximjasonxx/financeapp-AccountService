@@ -26,6 +26,11 @@ namespace AccountService.Functions
             AccountApplication applicationData = JsonConvert.DeserializeObject<AccountApplication>(rawContents);
 
             var createdUser = await UserService.CreateUser(newUser);
+            if (createdUser == null)
+            {
+                return new BadRequestResult();
+            }
+
             string applicationId = Guid.NewGuid().ToString();
             applicationData.ApplicationId = applicationId;
             applicationData.OwningUserId = createdUser.UserId;

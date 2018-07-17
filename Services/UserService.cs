@@ -21,6 +21,7 @@ namespace AccountService.Services
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     // something bad happend
+                    return null;
                 }
 
                 var responseContent = await response.Content.ReadAsStringAsync();

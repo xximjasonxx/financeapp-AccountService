@@ -82,6 +82,7 @@ namespace AccountService.Functions
                 return new UnauthorizedResult();
             }
 
+            log.Info("returning results");
             return new OkObjectResult(await AccountsService.GetAccounts(userId));
         }
     }

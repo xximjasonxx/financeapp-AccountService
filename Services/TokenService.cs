@@ -13,7 +13,7 @@ namespace AccountService.Services
         {
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync($"https://financeapp-authservice.azurewebsites.net/api/validate");
+                var response = await client.GetAsync($"https://financeapp-authservice.azurewebsites.net/api/get_user_for_token");
                 client.DefaultRequestHeaders.Add("auth-key", token);
                 client.DefaultRequestHeaders.Add("x-functions-key", "gpaYFglPWlvPUCfbH/GgZTf9lFO2T48RSY4rQPH19vuQq0wiwQ7OVQ==");
                 log.Info($"status {response.StatusCode.ToString()}");

@@ -54,15 +54,14 @@ namespace AccountService.Services
             collection.ReplaceOne(x => x._Id == account._Id, account);
         }
 
-        public static async Task<IList<Account>> GetAccounts()
+        public static async Task<IList<Account>> GetAccounts(string userId)
         {
             var client = new MongoClient("mongodb://financeapp:1e5Q5BuE7wRjGYmPSDj3IHK7gbQifFCvMwx7YoviCrUg88YK1YX3go74vYyeYwlzbrsCOxSfzB8iCVopJ7xHSw==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
             var database = client.GetDatabase("accounts");
             var collection = database.GetCollection<Account>("accounts");
 
-            var results = await collection.FindAsync(FilterDefinition<Account>.Empty);
+            var results = await collection.FindAsync(x => x.OwnerId == userId);
             return results.ToList();
-
         }
     }
 }

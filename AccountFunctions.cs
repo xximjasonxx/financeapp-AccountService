@@ -74,7 +74,7 @@ namespace AccountService.Functions
         public static async Task<IActionResult> GetAccounts([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, TraceWriter log)
         {
             var token = req.Headers["auth-key"].ToString().AsJwtToken();
-            log.Info($"Token {token}");
+            log.Info($"Token '{token}'");
 
             var userId = await TokenService.GetUserIdForToken(token, log);
             log.Info($"User Id {userId}");

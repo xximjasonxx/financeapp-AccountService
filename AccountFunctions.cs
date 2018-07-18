@@ -85,12 +85,5 @@ namespace AccountService.Functions
             log.Info("returning results");
             return new OkObjectResult(await AccountsService.GetAccounts(userId));
         }
-
-        [FunctionName("get_user_for_token")]
-        public static IActionResult GetUserForToken([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, TraceWriter log)
-        {
-            log.Info($"invoked {log.ToString()}");
-            return new OkResult();
-        }
     }
 }

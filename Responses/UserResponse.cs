@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace AccountService.Responses
 {
-    public class CreateUserResponse
+    public class UserResponse
     {
         [JsonProperty("userId")]
         public string UserId { get; set; }

@@ -39,7 +39,7 @@ namespace AccountService.Functions
             await AccountsService.CreateAccount(applicationData);
             log.Info("Application submitted");
 
-            return new OkResult();
+            return new OkObjectResult(new { Token = createdUser.Token });
         }
 
         [ServiceBusAccount("ServiceBusConnectionString")]

@@ -11,7 +11,7 @@ namespace AccountService.Services
 {
     public static class UserService
     {
-        public static async Task<CreateUserResponse> CreateUser(User newUser)
+        public static async Task<UserResponse> CreateUser(User newUser)
         {
             using (var client = new HttpClient())
             {
@@ -25,7 +25,7 @@ namespace AccountService.Services
                 }
 
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<CreateUserResponse>(responseContent);
+                return JsonConvert.DeserializeObject<UserResponse>(responseContent);
             }
         }
 

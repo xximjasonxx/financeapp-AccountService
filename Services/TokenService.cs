@@ -9,7 +9,7 @@ namespace AccountService.Services
 {
     public static class TokenService
     {
-        public static async Task<string> GetUserIdForToken(string token, TraceWriter log)
+        public static async Task<string> GetUserIdForToken(string token)
         {
             using (var client = new HttpClient())
             {
@@ -17,14 +17,12 @@ namespace AccountService.Services
                 client.DefaultRequestHeaders.Add("x-functions-key", "gpaYFglPWlvPUCfbH/GgZTf9lFO2T48RSY4rQPH19vuQq0wiwQ7OVQ==");
                 
                 var response = await client.GetAsync($"https://financeapp-authservice.azurewebsites.net/api/get_user_for_token");
-                log.Info($"status {response.StatusCode.ToString()}");
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     return string.Empty;
                 }
 
                 var responseContent = await response.Content.ReadAsStringAsync();
-                log.Info($"content {responseContent}");
                 return JObject.Parse(responseContent)["userId"].Value<string>();
             }
         }

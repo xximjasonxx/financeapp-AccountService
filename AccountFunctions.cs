@@ -76,7 +76,7 @@ namespace AccountService.Functions
             var token = req.Headers["auth-key"].ToString().AsJwtToken();
             log.Info($"Token '{token}'");
 
-            var userId = await TokenService.GetUserIdForToken(token, log);
+            var userId = await TokenService.GetUserIdForToken(token);
             log.Info($"User Id {userId}");
             if (string.IsNullOrEmpty(userId))
             {

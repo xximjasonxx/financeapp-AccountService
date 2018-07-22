@@ -86,5 +86,17 @@ namespace AccountService.Functions
             log.Info("returning results");
             return new OkObjectResult(await AccountsService.GetAccounts(userId));
         }
+
+        [FunctionName("get_account")]
+        public static async Task<IActionResult> GetAccount([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{id}")]HttpRequest request, string id, TraceWriter log)
+        {
+            var account = await AccountsService.GetAccount(id);
+            if (account == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(account);
+        }
     }
 }

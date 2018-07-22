@@ -90,25 +90,13 @@ namespace AccountService.Functions
         [FunctionName("get_account")]
         public static async Task<IActionResult> GetAccount([HttpTrigger(AuthorizationLevel.Function, "get", Route = "{id}")]HttpRequest request, string id, TraceWriter log)
         {
-            try
+            var account = await AccountsService.GetAccount(id);
+            if (account == null)
             {
-                log.Info($"getting account {id}");
-                var account = await AccountsService.GetAccount(id);
-
-                log.Info("account was returned, or something");
-                if (account == null)
-                {
-                    return new NotFoundResult();
-                }
-
-                log.Info("returning");
-                return new OkObjectResult(account);
+                return new NotFoundResult();
             }
-            catch (Exception ex)
-            {
-                log.Info(ex.Message);
-                throw;
-            }
+
+            return new OkObjectResult(account);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace AccountService.Services
         {
             using (var connection = GetConnection())
             {
-                const string sql = "update Accounts set [Status] = 1, CurrentBalance = @StartingBalance where ApplicationId = @ApplicationId and OwnerId = OwningUserId";
+                const string sql = "update Accounts set [Status] = 1, CurrentBalance = @StartingBalance where ApplicationId = @ApplicationId and OwnerId = @OwningUserId";
                 var rowsAffected = await connection.ExecuteAsync(sql, application);
 
                 if (rowsAffected == 0)

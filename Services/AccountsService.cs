@@ -21,49 +21,39 @@ namespace AccountService.Services
             return connection;
         }
 
-        public static async Task CreateAccount(AccountApplication application)
+        public static async Task<Account> CreateNewAccount(AccountApplication application)
         {
-            /*var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
-            var database = client.GetDatabase("accounts");
-            var collection = database.GetCollection<Account>("accounts");
-
-            var account = new Account()
+            var newAccount = new Account()
             {
+                ApplicationId = application.ApplicationId,
+                AccountId = Guid.NewGuid(),
                 AccountName = application.AccountName,
-                AccountType = application.AccountType,
-                OwnerId = application.OwningUserId,
                 Status = AccountStatus.Pending,
-                ApplicationId = application.ApplicationId
+                OwnerId = application.OwningUserId,
+                AccountType = application.AccountType
             };
 
-            await collection.InsertOneAsync(account);
-            await QueueService.SubmitApplicationForProcessing(application);*/
+            using (var connection = GetConnection())
+            {
+                const string sql = "insert into Accounts(AccountId, ApplicationId, AccountName, CurrentBalance, [Status], OwnerId, AccountType) values(@AccountId, @ApplicationId, @AccountName, 0, @Status, @OwnerId, @AccountType)";
+                await connection.ExecuteAsync(sql, newAccount);
+            }
+
+            return newAccount;
         }
 
-        public static Account GetAccountByApplication(AccountApplication application)
+        public static async Task<string> ApproveAccountAsync(AccountApplication application)
         {
-            /*var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
-            var database = client.GetDatabase("accounts");
-            var collection = database.GetCollection<Account>("accounts");
+            using (var connection = GetConnection())
+            {
+                const string sql = "update Accounts set [Status] = 1, CurrentBalance = @StartingBalance where ApplicationId = @ApplicationId and OwnerId = @OwnerId";
+                var rowsAffected = await connection.ExecuteAsync(sql, application);
 
-            var result = collection.Find(x => x.ApplicationId == application.ApplicationId &&
-                x.AccountName == application.AccountName &&
-                x.AccountType == application.AccountType &&
-                x.OwnerId == application.OwningUserId &&
-                x.Status == AccountStatus.Pending);
-
-            return result.FirstOrDefault();*/
-            return null;
-        }
-
-        public static void UpdateAccountDetails(Account account)
-        {
-            /* var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
-            var database = client.GetDatabase("accounts");
-            var collection = database.GetCollection<Account>("accounts");
-
-
-            collection.ReplaceOne(x => x._Id == account._Id, account); */
+                if (rowsAffected == 0)
+                    throw new Exception("Account not found");
+                
+                return application.ApplicationId.ToString();
+            }
         }
 
         public static async Task<IList<Account>> GetAccounts(string userId)

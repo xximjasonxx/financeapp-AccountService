@@ -1,4 +1,5 @@
 
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using AccountService.Models;
@@ -11,8 +12,8 @@ namespace AccountService.Services
     {
         public static async Task SubmitApplicationForProcessing(AccountApplication application)
         {
-            var sbConnectionString = "Endpoint=sb://financeapp-bus.servicebus.windows.net/;SharedAccessKeyName=SendKey;SharedAccessKey=s8Vte0tTPSiunVwK6Irau26ONeg2eaJxCtZECPVcuKc=";
-            var queueName = "accounts_to_process";
+            var sbConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnection", EnvironmentVariableTarget.Process);
+            var queueName = "application-queue";
 
             var queueClient = new QueueClient(sbConnectionString, queueName);
             var rawContents = JsonConvert.SerializeObject(application);

@@ -37,9 +37,8 @@ namespace AccountService.Functions
             return new AcceptedResult(newAccount.AccountId.ToString(), newAccount);
         }
 
-        [ServiceBusAccount("ServiceBusConnection")]
         [FunctionName("process_application")]
-        public static async void ProcessApplication([ServiceBusTrigger("application-queue")] string applicationContents, TraceWriter logger)
+        public static async void ProcessApplication([ServiceBusTrigger("application-queue", Connection = "ServiceBusConnection")] string applicationContents, TraceWriter logger)
         {
             var application = JsonConvert.DeserializeObject<AccountApplication>(applicationContents);
             await Task.Run(() => {

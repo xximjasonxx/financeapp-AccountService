@@ -74,17 +74,11 @@ namespace AccountService.Functions
         public static async Task<IActionResult> GetAccounts([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, TraceWriter log)
         {
             var token = req.Headers["auth-key"].ToString().AsJwtToken();
-            log.Info($"Token '{token}'");
+            var user = await TokenService.GetUserIdForToken(token);
+            if (user == null)
+                return new NotFoundResult();
 
-            var userId = await TokenService.GetUserIdForToken(token);
-            log.Info($"User Id {userId}");
-            if (string.IsNullOrEmpty(userId))
-            {
-                return new UnauthorizedResult();
-            }
-
-            log.Info("returning results");
-            return new OkObjectResult(await AccountsService.GetAccounts(userId));
+            return new OkObjectResult(await AccountsService.GetAccounts(user.UserId));
         }
 
         [FunctionName("get_account")]
@@ -92,9 +86,7 @@ namespace AccountService.Functions
         {
             var account = await AccountsService.GetAccount(id);
             if (account == null)
-            {
                 return new NotFoundResult();
-            }
 
             return new OkObjectResult(account);
         }

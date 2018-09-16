@@ -1,6 +1,5 @@
 
 using System.Threading.Tasks;
-using MongoDB.Driver;
 using AccountService.Models;
 using System.Net.Http;
 using AccountService.Responses;
@@ -16,7 +15,7 @@ namespace AccountService.Services
             using (var client = new HttpClient())
             {
                 var content = new StringContent(JsonConvert.SerializeObject(newUser));
-                client.DefaultRequestHeaders.Add("x-functions-key", "gpaYFglPWlvPUCfbH/GgZTf9lFO2T48RSY4rQPH19vuQq0wiwQ7OVQ==");
+                client.DefaultRequestHeaders.Add("x-functions-key", "CQJ/LKNibcTaRUrHmr2maKyfLNo3HNZ8rNGSLIuslwO7BZfW0qxbTA==");
                 var response = await client.PostAsync("https://financeapp-authservice.azurewebsites.net/api/create_user", content);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -33,8 +32,8 @@ namespace AccountService.Services
         {
             using (var client = new HttpClient())
             {
+                client.DefaultRequestHeaders.Add("x-functions-key", "CQJ/LKNibcTaRUrHmr2maKyfLNo3HNZ8rNGSLIuslwO7BZfW0qxbTA==");
                 var response = await client.GetAsync($"https://financeapp-authservice.azurewebsites.net/api/{userId}");
-                client.DefaultRequestHeaders.Add("x-functions-key", "gpaYFglPWlvPUCfbH/GgZTf9lFO2T48RSY4rQPH19vuQq0wiwQ7OVQ==");
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     return null;

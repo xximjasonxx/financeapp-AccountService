@@ -1,19 +1,29 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using AccountService.Models;
-using MongoDB.Bson;
-using MongoDB.Driver;
+using Dapper;
 
 namespace AccountService.Services
 {
     public static class AccountsService
     {
+        static IDbConnection GetConnection()
+        {
+            var connStr = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
+            var connection = new SqlConnection(connStr);
+            connection.Open();
+
+            return connection;
+        }
+
         public static async Task CreateAccount(AccountApplication application)
         {
-            var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
+            /*var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
             var database = client.GetDatabase("accounts");
             var collection = database.GetCollection<Account>("accounts");
 
@@ -27,12 +37,12 @@ namespace AccountService.Services
             };
 
             await collection.InsertOneAsync(account);
-            await QueueService.SubmitApplicationForProcessing(application);
+            await QueueService.SubmitApplicationForProcessing(application);*/
         }
 
         public static Account GetAccountByApplication(AccountApplication application)
         {
-            var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
+            /*var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
             var database = client.GetDatabase("accounts");
             var collection = database.GetCollection<Account>("accounts");
 
@@ -42,37 +52,36 @@ namespace AccountService.Services
                 x.OwnerId == application.OwningUserId &&
                 x.Status == AccountStatus.Pending);
 
-            return result.FirstOrDefault();
+            return result.FirstOrDefault();*/
+            return null;
         }
 
         public static void UpdateAccountDetails(Account account)
         {
-            var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
+            /* var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
             var database = client.GetDatabase("accounts");
             var collection = database.GetCollection<Account>("accounts");
 
 
-            collection.ReplaceOne(x => x._Id == account._Id, account);
+            collection.ReplaceOne(x => x._Id == account._Id, account); */
         }
 
         public static async Task<IList<Account>> GetAccounts(string userId)
         {
-            var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
-            var database = client.GetDatabase("accounts");
-            var collection = database.GetCollection<Account>("accounts");
-
-            var results = await collection.FindAsync(x => x.OwnerId == userId);
-            return results.ToList();
+            using (var connection = GetConnection())
+            {
+                var accountsResult = await connection.QueryMultipleAsync("select * from Accounts where OwnerId = @OwnerId", new { OwnerId = userId });
+                return accountsResult.Read<Account>().ToList();
+            }
         }
 
         public static async Task<Account> GetAccount(string id)
         {
-            var client = new MongoClient("mongodb://financeapp:alxvP9nMsU21vn6Ap0iLWnPRiKvqauHMDm0SK9jI8OwfNqIfluujL532VHqjZPg61668dt5VWAFbO2DoYpETIg==@financeapp.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
-            var database = client.GetDatabase("accounts");
-            var collection = database.GetCollection<Account>("accounts");
-
-            var results = await collection.FindAsync(x => x._Id == ObjectId.Parse(id));
-            return results.FirstOrDefault();
+            using (var connection = GetConnection())
+            {
+                const string sql = "select * from Accounts where AccountId = @AccountId";
+                return await connection.QueryFirstOrDefaultAsync(sql, new { AccountId = id });
+            }
         }
     }
 }

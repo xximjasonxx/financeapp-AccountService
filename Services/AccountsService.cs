@@ -43,22 +43,16 @@ namespace AccountService.Services
             return newAccount;
         }
 
-        public static async Task<string> ApproveAccountAsync(AccountApplication application, TraceWriter logger)
+        public static async Task<string> ApproveAccountAsync(AccountApplication application)
         {
             using (var connection = GetConnection())
             {
-                const string sql = "update Accounts set [Status] = 1, CurrentBalance = @StartingBalance where ApplicationId = @ApplicationId and OwnerId = @OwnerId";
-                logger.Info(sql);
-
-                logger.Info($"AppId: {application.ApplicationId}");
-                logger.Info($"Owner: {application.OwningUserId}");
+                const string sql = "update Accounts set [Status] = 1, CurrentBalance = @StartingBalance where ApplicationId = @ApplicationId and OwnerId = OwningUserId";
                 var rowsAffected = await connection.ExecuteAsync(sql, application);
-                logger.Info($"Rows affected {rowsAffected}");
 
                 if (rowsAffected == 0)
                     throw new Exception("Account not found");
-                
-                logger.Info("Finishing apprival");
+
                 return application.ApplicationId.ToString();
             }
         }

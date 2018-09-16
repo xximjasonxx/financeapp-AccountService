@@ -42,14 +42,12 @@ namespace AccountService.Functions
         {
             try
             {
-                logger.Info("Starting");
                 var application = JsonConvert.DeserializeObject<AccountApplication>(applicationContents);
                 await Task.Run(() => {
-                    Thread.Sleep(10);
+                    Thread.Sleep(10000);
                 });
 
-                logger.Info("Updating");
-                await AccountsService.ApproveAccountAsync(application, logger);
+                await AccountsService.ApproveAccountAsync(application);
             }
             catch (Exception ex)
             {

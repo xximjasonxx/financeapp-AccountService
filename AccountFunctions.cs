@@ -38,7 +38,7 @@ namespace AccountService.Functions
         }
 
         [FunctionName("process_application")]
-        public static async void ProcessApplication([ServiceBusTrigger("application-queue", Connection = "ServiceBusConnection")] string applicationContents, TraceWriter logger)
+        public static async void ProcessApplication([ServiceBusTrigger("application-queue", Connection = "ServiceBusConnection")]string applicationContents, TraceWriter logger)
         {
             try
             {

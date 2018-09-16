@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AccountService.Models;
 using Dapper;
+using Microsoft.Azure.WebJobs.Host;
 
 namespace AccountService.Services
 {
@@ -46,12 +47,12 @@ namespace AccountService.Services
         {
             using (var connection = GetConnection())
             {
-                const string sql = "update Accounts set [Status] = 1, CurrentBalance = @StartingBalance where ApplicationId = @ApplicationId and OwnerId = @OwnerId";
+                const string sql = "update Accounts set [Status] = 1, CurrentBalance = @StartingBalance where ApplicationId = @ApplicationId and OwnerId = @OwningUserId";
                 var rowsAffected = await connection.ExecuteAsync(sql, application);
 
                 if (rowsAffected == 0)
                     throw new Exception("Account not found");
-                
+
                 return application.ApplicationId.ToString();
             }
         }
@@ -70,7 +71,9 @@ namespace AccountService.Services
             using (var connection = GetConnection())
             {
                 const string sql = "select * from Accounts where AccountId = @AccountId";
-                return await connection.QueryFirstOrDefaultAsync(sql, new { AccountId = id });
+                var account = await connection.QueryFirstOrDefaultAsync(sql, new { AccountId = id });
+
+                return account;
             }
         }
     }

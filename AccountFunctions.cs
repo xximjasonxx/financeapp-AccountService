@@ -38,14 +38,21 @@ namespace AccountService.Functions
         }
 
         [FunctionName("process_application")]
-        public static async void ProcessApplication([ServiceBusTrigger("application-queue", Connection = "ServiceBusConnection")] string applicationContents, TraceWriter logger)
+        public static async void ProcessApplication([ServiceBusTrigger("application-queue", Connection = "ServiceBusConnection")]string applicationContents, TraceWriter logger)
         {
-            var application = JsonConvert.DeserializeObject<AccountApplication>(applicationContents);
-            await Task.Run(() => {
-                Thread.Sleep(10);
-            });
+            try
+            {
+                var application = JsonConvert.DeserializeObject<AccountApplication>(applicationContents);
+                await Task.Run(() => {
+                    Thread.Sleep(10000);
+                });
 
-            await AccountsService.ApproveAccountAsync(application);
+                await AccountsService.ApproveAccountAsync(application);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message, ex);
+            }
         }
 
         [FunctionName("get_accounts")]

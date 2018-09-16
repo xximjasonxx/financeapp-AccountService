@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AccountService.Models;
 using Dapper;
+using Microsoft.Azure.WebJobs.Host;
 
 namespace AccountService.Services
 {
@@ -42,16 +43,22 @@ namespace AccountService.Services
             return newAccount;
         }
 
-        public static async Task<string> ApproveAccountAsync(AccountApplication application)
+        public static async Task<string> ApproveAccountAsync(AccountApplication application, TraceWriter logger)
         {
             using (var connection = GetConnection())
             {
                 const string sql = "update Accounts set [Status] = 1, CurrentBalance = @StartingBalance where ApplicationId = @ApplicationId and OwnerId = @OwnerId";
+                logger.Info(sql);
+
+                logger.Info($"AppId: {application.ApplicationId}");
+                logger.Info($"Owner: {application.OwningUserId}");
                 var rowsAffected = await connection.ExecuteAsync(sql, application);
+                logger.Info($"Rows affected {rowsAffected}");
 
                 if (rowsAffected == 0)
                     throw new Exception("Account not found");
                 
+                logger.Info("Finishing apprival");
                 return application.ApplicationId.ToString();
             }
         }

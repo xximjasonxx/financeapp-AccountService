@@ -67,7 +67,7 @@ namespace AccountService.Functions
         }
 
         [FunctionName("get_account")]
-        public static async Task<IActionResult> GetAccount([HttpTrigger(AuthorizationLevel.Function, "get", Route = "{id}")]HttpRequest request, string id, TraceWriter log)
+        public static async Task<IActionResult> GetAccount([HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{id}")]HttpRequest request, string id, TraceWriter log)
         {
             var account = await AccountsService.GetAccount(id);
             if (account == null)

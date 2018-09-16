@@ -70,7 +70,9 @@ namespace AccountService.Services
             using (var connection = GetConnection())
             {
                 const string sql = "select * from Accounts where AccountId = @AccountId";
-                return await connection.QueryFirstOrDefaultAsync(sql, new { AccountId = id });
+                var account = await connection.QueryFirstOrDefaultAsync(sql, new { AccountId = id });
+
+                return account;
             }
         }
     }

@@ -5,7 +5,7 @@ namespace AccountService.Models
 {
     public class User
     {
-        [JsonProperty("userId")]
+        [JsonProperty("id")]
         public string UserId { get; set; }
 
         [JsonProperty("emailAddress")]

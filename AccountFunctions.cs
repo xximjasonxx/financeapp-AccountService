@@ -56,7 +56,7 @@ namespace AccountService.Functions
         }
 
         [FunctionName("change_account_balance")]
-        public static async void ChangeAccountBalance([ServiceBusTrigger("", Connection = "ServiceBusConnection")]string changeValueContents, TraceWriter logger)
+        public static async void ChangeAccountBalance([ServiceBusTrigger("current-balance-update-queue", Connection = "ServiceBusConnection")]string changeValueContents, TraceWriter logger)
         {
             var changeEvent = JsonConvert.DeserializeObject<AmountChangeEvent>(changeValueContents);
             await AccountsService.UpdateAccountBalanceAsync(changeEvent.TargetAccountId, changeEvent.ValueChangeAmount);

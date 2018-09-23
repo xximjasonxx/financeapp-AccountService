@@ -81,7 +81,7 @@ namespace AccountService.Services
         {
             using (var connection = GetConnection())
             {
-                const string sql = "update set CurrentBalance = CurrentBalance + @ChangeAmount where AccountId = @AccountId";
+                const string sql = "update Accounts set CurrentBalance = CurrentBalance + @ChangeAmount where AccountId = @AccountId";
                 await connection.ExecuteAsync(sql, new { ChangeAmount = valueChangeAmount, AccountId = targetAccountId });
             }
         }

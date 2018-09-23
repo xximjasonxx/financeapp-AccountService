@@ -38,7 +38,7 @@ namespace AccountService.Functions
         }
 
         [FunctionName("process_application")]
-        public static async void ProcessApplication([ServiceBusTrigger("application-queue", Connection = "ServiceBusConnection")]string applicationContents, TraceWriter logger)
+        public static async Task ProcessApplication([ServiceBusTrigger("application-queue", Connection = "ServiceBusConnection")]string applicationContents, TraceWriter logger)
         {
             try
             {
@@ -56,9 +56,10 @@ namespace AccountService.Functions
         }
 
         [FunctionName("change_account_balance")]
-        public static async void ChangeAccountBalance([ServiceBusTrigger("current-balance-update-queue", Connection = "ServiceBusConnection")]string changeValueContents, TraceWriter logger)
+        public static async Task ChangeAccountBalance([ServiceBusTrigger("current-balance-update-queue", Connection = "ServiceBusConnection")]string changeValueContents, TraceWriter logger)
         {
             var changeEvent = JsonConvert.DeserializeObject<AmountChangeEvent>(changeValueContents);
+            logger.Info($"executing change event for account {changeEvent.TargetAccountId}");
             await AccountsService.UpdateAccountBalanceAsync(changeEvent.TargetAccountId, changeEvent.ValueChangeAmount);
         }
 

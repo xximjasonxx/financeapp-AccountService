@@ -55,6 +55,13 @@ namespace AccountService.Functions
             }
         }
 
+        [FunctionName("change_account_balance")]
+        public static async void ChangeAccountBalance([ServiceBusTrigger("", Connection = "ServiceBusConnection")]string changeValueContents, TraceWriter logger)
+        {
+            var changeEvent = JsonConvert.DeserializeObject<AmountChangeEvent>(changeValueContents);
+            await AccountsService.UpdateAccountBalanceAsync(changeEvent.TargetAccountId, changeEvent.ValueChangeAmount);
+        }
+
         [FunctionName("get_accounts")]
         public static async Task<IActionResult> GetAccounts([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, TraceWriter log)
         {

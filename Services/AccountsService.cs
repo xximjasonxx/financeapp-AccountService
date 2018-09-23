@@ -76,5 +76,14 @@ namespace AccountService.Services
                 return account;
             }
         }
+
+        public static async Task UpdateAccountBalanceAsync(string targetAccountId, decimal valueChangeAmount)
+        {
+            using (var connection = GetConnection())
+            {
+                const string sql = "update set CurrentBalance = CurrentBalance + @ChangeAmount where AccountId = @AccountId";
+                await connection.ExecuteAsync(sql, new { ChangeAmount = valueChangeAmount, AccountId = targetAccountId });
+            }
+        }
     }
 }

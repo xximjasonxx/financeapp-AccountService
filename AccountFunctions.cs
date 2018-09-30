@@ -77,6 +77,11 @@ namespace AccountService.Functions
         [FunctionName("get_account")]
         public static async Task<IActionResult> GetAccount([HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{id}")]HttpRequest request, string id, TraceWriter log)
         {
+            var token = request.Headers["auth-key"].ToString().AsJwtToken();
+            var user = await TokenService.GetUserIdForToken(token);
+            if (user == null)
+                return new NotFoundResult();
+
             var account = await AccountsService.GetAccount(id);
             if (account == null)
                 return new NotFoundResult();

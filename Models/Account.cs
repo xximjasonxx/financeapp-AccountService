@@ -17,8 +17,14 @@ namespace AccountService.Models
         [JsonProperty("currentBalance")]
         public decimal CurrentBalance { get; set; }
         
-        [JsonProperty("status")]
+        [JsonIgnore]
         public AccountStatus Status { get; set; }
+
+        [JsonProperty("status")]
+        public string StatusDisplay
+        {
+            get { return Status.ToString(); }
+        }
 
         [JsonProperty("owner")]
         public Guid OwnerId { get; set; }

@@ -17,7 +17,7 @@ namespace AccountService.Models
         [JsonProperty("currentBalance")]
         public decimal CurrentBalance { get; set; }
         
-        [JsonIgnore]
+        [JsonProperty("statusCode")]
         public AccountStatus Status { get; set; }
 
         [JsonProperty("status")]
